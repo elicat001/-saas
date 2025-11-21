@@ -1,5 +1,5 @@
 
-import { Category, Product, Table, TableStatus, Order, OrderStatus, User } from './types';
+import { Category, Product, Table, TableStatus, Order, OrderStatus, User, Reservation, ReservationStatus } from './types';
 
 export const CATEGORIES: Category[] = [
   { id: 'c1', name: '全部', icon: 'LayoutGrid' },
@@ -21,11 +21,11 @@ export const PRODUCTS: Product[] = [
   { id: 'p8', name: '抹茶瑞士卷', price: 8.80, categoryId: 'c6', stock: 1000, unit: '卷', isOnShelf: true, image: 'https://images.unsplash.com/photo-1599146617646-455f8267d899?w=200&q=80' },
 ];
 
-export const INITIAL_TABLES: Table[] = Array.from({ length: 8 }, (_, i) => ({
+export const INITIAL_TABLES: Table[] = Array.from({ length: 10 }, (_, i) => ({
   id: `t${i + 1}`,
   name: `${i + 1}`,
   status: i === 0 ? TableStatus.AVAILABLE : (i === 1 ? TableStatus.SCANNED : TableStatus.AVAILABLE),
-  capacity: 4,
+  capacity: i < 4 ? 2 : (i < 8 ? 4 : 8),
 }));
 
 export const MOCK_ORDERS: Order[] = [
@@ -56,4 +56,26 @@ export const MOCK_USERS: User[] = [
   { id: 'u1', name: '张三', phone: '13800138000', type: 'MEMBER', balance: 120.50, points: 500, level: 2, joinDate: '2024-01-15' },
   { id: 'u2', name: '李四', phone: '13900139000', type: 'NORMAL', balance: 0, points: 0, level: 0, joinDate: '2024-11-02' },
   { id: 'u3', name: '王五', phone: '13700137000', type: 'MEMBER', balance: 15.00, points: 120, level: 1, joinDate: '2024-10-10' },
+];
+
+export const MOCK_RESERVATIONS: Reservation[] = [
+  { 
+    id: 'res-001', 
+    tableId: 't3', 
+    customerName: '王先生', 
+    customerPhone: '13812345678', 
+    reservationTime: new Date(new Date().setHours(18, 30)).toISOString(), // Today 18:30
+    guests: 4, 
+    status: ReservationStatus.CONFIRMED,
+    notes: '需宝宝椅'
+  },
+  { 
+    id: 'res-002', 
+    tableId: 't8', 
+    customerName: '陈小姐', 
+    customerPhone: '13987654321', 
+    reservationTime: new Date(new Date().setHours(19, 0)).toISOString(), // Today 19:00
+    guests: 8, 
+    status: ReservationStatus.PENDING 
+  }
 ];

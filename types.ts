@@ -13,6 +13,13 @@ export enum TableStatus {
   PAID = 'PAID'
 }
 
+export enum ReservationStatus {
+  CONFIRMED = 'CONFIRMED',
+  PENDING = 'PENDING',
+  ARRIVED = 'ARRIVED',
+  CANCELLED = 'CANCELLED'
+}
+
 export interface Category {
   id: string;
   name: string;
@@ -64,4 +71,15 @@ export interface User {
   points: number;
   level: number;
   joinDate: string;
+}
+
+export interface Reservation {
+  id: string;
+  tableId: string;
+  customerName: string;
+  customerPhone: string;
+  reservationTime: string; // ISO string or formatted date string
+  guests: number;
+  status: ReservationStatus;
+  notes?: string;
 }
