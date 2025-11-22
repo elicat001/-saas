@@ -31,16 +31,46 @@ import AppCenter from './components/AppCenter';
 import AuxCustomerService from './components/AuxCustomerService';
 import AuxLogistics from './components/AuxLogistics';
 import AuxExternalDomain from './components/AuxExternalDomain';
+import InventoryManagement from './components/InventoryManagement';
 
-import { INITIAL_TABLES, MOCK_ORDERS } from './constants';
-import { Order, Table, CartItem, OrderStatus, TableStatus } from './types';
+import { INITIAL_TABLES, MOCK_ORDERS, INITIAL_PRODUCTS, MOCK_SUPPLIERS, MOCK_STOCK_LOGS } from './constants';
+import { Order, Table, CartItem, OrderStatus, TableStatus, Product, Supplier, StockLog, StockTransactionType } from './types';
 
 const App: React.FC = () => {
   // Global State
   const [tables, setTables] = useState<Table[]>(INITIAL_TABLES);
   const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
+  
+  // Inventory State (Lifted Up)
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [suppliers, setSuppliers] = useState<Supplier[]>(MOCK_SUPPLIERS);
+  const [stockLogs, setStockLogs] = useState<StockLog[]>(MOCK_STOCK_LOGS);
+
+  // Centralized Stock Update Logic
+  const handleStockUpdate = (productId: string, delta: number, type: StockTransactionType, note?: string) => {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    // 1. Create Log
+    const newLog: StockLog = {
+      id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      productId,
+      productName: product.name,
+      type,
+      delta,
+      currentStock: product.stock + delta,
+      operator: '当前用户', // In a real app, get from auth context
+      timestamp: Date.now(),
+      note
+    };
+    setStockLogs(prev => [newLog, ...prev]);
+
+    // 2. Update Product Stock
+    setProducts(prev => prev.map(p => p.id === productId ? { ...p, stock: p.stock + delta } : p));
+  };
 
   const handlePlaceOrder = (tableId: string, items: CartItem[], total: number) => {
+    // 1. Create Order
     const newOrder: Order = {
       id: `ord-${Date.now()}`,
       orderNo: `${Date.now()}`,
@@ -54,9 +84,24 @@ const App: React.FC = () => {
 
     setOrders(prev => [newOrder, ...prev]);
 
+    // 2. Update Table Status
     setTables(prev => prev.map(t => 
       t.id === tableId ? { ...t, status: TableStatus.SCANNED, currentOrderId: newOrder.id } : t
     ));
+
+    // 3. Deduct Inventory
+    items.forEach(item => {
+      handleStockUpdate(
+        item.id, 
+        -item.quantity, 
+        StockTransactionType.OUT_SALE, 
+        `订单销售: ${newOrder.orderNo}`
+      );
+    });
+  };
+
+  const handleUpdateProduct = (updatedProduct: Product) => {
+    setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
   };
 
   return (
@@ -70,14 +115,26 @@ const App: React.FC = () => {
           <div className="p-6 min-w-[1000px]">
             <Routes>
               <Route path="/" element={<Dashboard orders={orders} />} />
-              <Route path="/pos" element={<POS tables={tables} onPlaceOrder={handlePlaceOrder} />} />
-              <Route path="/products" element={<ProductList />} />
+              <Route path="/pos" element={<POS tables={tables} products={products} onPlaceOrder={handlePlaceOrder} />} />
+              <Route path="/products" element={<ProductList products={products} />} />
               <Route path="/orders" element={<OrderList />} />
               <Route path="/users" element={<UserList />} />
               <Route path="/employees" element={<EmployeeList />} />
               <Route path="/table-mgmt" element={<TableManagement />} />
               <Route path="/cashier" element={<CashierManagement />} />
               <Route path="/balance-stats" element={<BalanceStatistics />} />
+              
+              {/* Inventory Route */}
+              <Route path="/inventory" element={
+                <InventoryManagement 
+                  products={products} 
+                  suppliers={suppliers} 
+                  logs={stockLogs}
+                  onUpdateStock={handleStockUpdate}
+                  onAddSupplier={(sup) => setSuppliers([...suppliers, sup])}
+                  onUpdateProduct={handleUpdateProduct}
+                />
+              } />
               
               {/* Configuration Routes */}
               <Route path="/config/miniprogram" element={<ConfigMiniProgram />} />
@@ -114,7 +171,6 @@ const App: React.FC = () => {
               <Route path="/stock-warning" element={<div className="p-10 text-center text-slate-500">库存预警 - 🚧 施工中</div>} />
               <Route path="/specs" element={<div className="p-10 text-center text-slate-500">规格模板 - 🚧 施工中</div>} />
               <Route path="/mandatory" element={<div className="p-10 text-center text-slate-500">必点商品 - 🚧 施工中</div>} />
-              <Route path="/inventory" element={<div className="p-10 text-center text-slate-500">进销存 - 🚧 施工中</div>} />
               <Route path="/tags" element={<div className="p-10 text-center text-slate-500">标签管理 - 🚧 施工中</div>} />
               
               <Route path="/ai-insight" element={<AIAssistant orders={orders} />} />

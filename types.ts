@@ -30,12 +30,15 @@ export interface Product {
   id: string;
   name: string;
   price: number;
+  costPrice?: number; // New: Cost price for profit calculation
   categoryId: string;
   image?: string;
   stock: number;
+  minStock?: number; // New: Low stock alert threshold
   unit: string;
   salesMode?: ('DINE_IN' | 'TAKE_OUT')[];
   isOnShelf: boolean;
+  supplierId?: string; // New: Link to supplier
 }
 
 export interface CartItem extends Product {
@@ -83,4 +86,34 @@ export interface Reservation {
   guests: number;
   status: ReservationStatus;
   notes?: string;
+}
+
+// --- New Inventory Types ---
+
+export interface Supplier {
+  id: string;
+  name: string;
+  contactName: string;
+  phone: string;
+  email?: string;
+}
+
+export enum StockTransactionType {
+  IN_PURCHASE = '采购入库',
+  IN_RETURN = '退货入库',
+  OUT_SALE = '销售出库',
+  OUT_LOSS = '损耗出库',
+  ADJUSTMENT = '库存盘点'
+}
+
+export interface StockLog {
+  id: string;
+  productId: string;
+  productName: string;
+  type: StockTransactionType;
+  delta: number; // Positive for IN, Negative for OUT
+  currentStock: number; // Snapshot after change
+  operator: string;
+  timestamp: number;
+  note?: string;
 }

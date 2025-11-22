@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { INITIAL_TABLES, MOCK_RESERVATIONS, MOCK_ORDERS, PRODUCTS } from '../constants';
+import { INITIAL_TABLES, MOCK_RESERVATIONS, MOCK_ORDERS, INITIAL_PRODUCTS } from '../constants';
 import { Table, TableStatus, Reservation, ReservationStatus, CartItem } from '../types';
 import { Search, Plus, Maximize, MoreHorizontal, Calendar, Clock, User, Phone, Users, X, Printer, Wallet, RefreshCw, Trash2, Settings as SettingsIcon } from 'lucide-react';
 

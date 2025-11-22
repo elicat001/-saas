@@ -1,17 +1,23 @@
 
 import React, { useState } from 'react';
-import { PRODUCTS, CATEGORIES } from '../constants';
+import { Product } from '../types';
+import { CATEGORIES } from '../constants';
 import { Search, Plus, Download, Upload, MoreHorizontal, Edit, Trash2, QrCode } from 'lucide-react';
 import QRCodeModal from './QRCodeModal';
 
-const ProductList: React.FC = () => {
+// Accept props instead of importing PRODUCTS directly
+interface ProductListProps {
+  products: Product[];
+}
+
+const ProductList: React.FC<ProductListProps> = ({ products }) => {
   const [qrModal, setQrModal] = useState<{isOpen: boolean, title: string, data: string}>({
     isOpen: false,
     title: '',
     data: ''
   });
 
-  const handleShowQR = (product: typeof PRODUCTS[0]) => {
+  const handleShowQR = (product: Product) => {
     setQrModal({
       isOpen: true,
       title: '商品二维码',
@@ -90,7 +96,7 @@ const ProductList: React.FC = () => {
                </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-               {PRODUCTS.map(product => (
+               {products.map(product => (
                   <tr key={product.id} className="hover:bg-slate-50 group">
                      <td className="p-4"><input type="checkbox" /></td>
                      <td className="p-4">
@@ -108,13 +114,15 @@ const ProductList: React.FC = () => {
                      </td>
                      <td className="p-4">
                         <div className="font-medium text-slate-800">{product.price.toFixed(2)}</div>
-                        <div className="text-xs text-slate-400">包装费: 0.30</div>
+                        <div className="text-xs text-slate-400">成本: {product.costPrice?.toFixed(2) || '-'}</div>
                      </td>
                      <td className="p-4 text-slate-600">
                         {CATEGORIES.find(c => c.id === product.categoryId)?.name}
                      </td>
-                     <td className="p-4 text-slate-600">
-                        {product.stock}
+                     <td className="p-4">
+                        <span className={product.stock <= (product.minStock || 0) ? 'text-red-500 font-bold' : 'text-slate-600'}>
+                          {product.stock}
+                        </span>
                      </td>
                      <td className="p-4 text-slate-400">-</td>
                      <td className="p-4">

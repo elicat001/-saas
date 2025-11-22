@@ -1,23 +1,24 @@
 
 import React, { useState, useMemo } from 'react';
 import { Product, CartItem, Table } from '../types';
-import { CATEGORIES, PRODUCTS } from '../constants';
+import { CATEGORIES } from '../constants';
 import { Search, Maximize2, ShoppingCart, Trash2, Wallet, CreditCard } from 'lucide-react';
 
 interface POSProps {
   tables: Table[];
+  products: Product[]; // New Prop
   onPlaceOrder: (tableId: string, items: CartItem[], total: number) => void;
 }
 
-const POS: React.FC<POSProps> = ({ tables, onPlaceOrder }) => {
-  const [activeTab, setActiveTab] = useState('DINE_IN'); // DINE_IN, SELF_PICKUP, DELIVERY
-  const [selectedCategory, setSelectedCategory] = useState<string>('c1'); // 'c1' is All
+const POS: React.FC<POSProps> = ({ tables, products, onPlaceOrder }) => {
+  const [activeTab, setActiveTab] = useState('DINE_IN'); 
+  const [selectedCategory, setSelectedCategory] = useState<string>('c1');
   const [searchQuery, setSearchQuery] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [tableInput, setTableInput] = useState('');
 
   const filteredProducts = useMemo(() => {
-    let prods = PRODUCTS;
+    let prods = products; // Use dynamic products
     if (selectedCategory && selectedCategory !== 'c1') {
       prods = prods.filter(p => p.categoryId === selectedCategory);
     }
@@ -25,16 +26,19 @@ const POS: React.FC<POSProps> = ({ tables, onPlaceOrder }) => {
       prods = prods.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
     }
     return prods;
-  }, [selectedCategory, searchQuery]);
+  }, [products, selectedCategory, searchQuery]);
 
   const cartTotal = useMemo(() => {
     return cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   }, [cart]);
 
   const addToCart = (product: Product) => {
+    if (product.stock <= 0) return; // Prevent adding out of stock
+
     setCart(prev => {
       const existing = prev.find(p => p.id === product.id);
       if (existing) {
+        if (existing.quantity >= product.stock) return prev; // Check stock limit
         return prev.map(p => p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p);
       }
       return [...prev, { ...product, quantity: 1 }];
@@ -44,7 +48,12 @@ const POS: React.FC<POSProps> = ({ tables, onPlaceOrder }) => {
   const updateQuantity = (id: string, delta: number) => {
     setCart(prev => prev.map(item => {
       if (item.id === id) {
-        return { ...item, quantity: Math.max(0, item.quantity + delta) };
+        const product = products.find(p => p.id === id);
+        const maxStock = product ? product.stock : 9999;
+        const newQty = item.quantity + delta;
+        
+        if (newQty > maxStock) return item; // Cap at stock
+        return { ...item, quantity: Math.max(0, newQty) };
       }
       return item;
     }).filter(item => item.quantity > 0));
@@ -129,7 +138,8 @@ const POS: React.FC<POSProps> = ({ tables, onPlaceOrder }) => {
                       <span className="text-sm font-medium w-4 text-center">{item.quantity}</span>
                       <button 
                         onClick={() => updateQuantity(item.id, 1)}
-                        className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600"
+                        disabled={item.quantity >= (products.find(p => p.id === item.id)?.stock || 0)}
+                        className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600 disabled:bg-slate-300 disabled:cursor-not-allowed"
                       >+</button>
                    </div>
                 </div>
@@ -218,13 +228,18 @@ const POS: React.FC<POSProps> = ({ tables, onPlaceOrder }) => {
                       <div 
                         key={product.id}
                         onClick={() => addToCart(product)}
-                        className="group cursor-pointer bg-white rounded-lg overflow-hidden border border-slate-200 hover:border-emerald-400 hover:shadow-md transition-all relative"
+                        className={`
+                          group cursor-pointer bg-white rounded-lg overflow-hidden border hover:shadow-md transition-all relative
+                          ${product.stock <= 0 ? 'border-slate-200 opacity-70 grayscale' : 'border-slate-200 hover:border-emerald-400'}
+                        `}
                       >
                          {/* Image */}
                          <div className="aspect-square bg-slate-200 relative">
                            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-                             <span className="text-white text-xs font-bold">剩{product.stock}{product.unit}</span>
+                             <span className={`text-xs font-bold ${product.stock <= 0 ? 'text-red-300' : 'text-white'}`}>
+                               {product.stock <= 0 ? '已售罄' : `剩${product.stock}${product.unit}`}
+                             </span>
                            </div>
                          </div>
                          
@@ -237,11 +252,13 @@ const POS: React.FC<POSProps> = ({ tables, onPlaceOrder }) => {
                          </div>
 
                          {/* Hover Add */}
-                         <div className="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
-                               <span className="text-xl font-bold">+</span>
-                            </div>
-                         </div>
+                         {product.stock > 0 && (
+                           <div className="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                                 <span className="text-xl font-bold">+</span>
+                              </div>
+                           </div>
+                         )}
                       </div>
                     ))}
                  </div>
