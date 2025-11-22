@@ -70,6 +70,7 @@ const Sidebar: React.FC = () => {
         { label: '订单提醒', path: '/config/notify' },
         { label: '小程序助手', path: '/config/helper' },
         { label: '界面设置', path: '/config/interface' },
+        { label: '二级页面', path: '/config/secondary-pages' },
         { label: '系统设置', path: '/config/system' },
         { label: '第三方配送', path: '/config/delivery' },
         { label: '打印机设置', path: '/config/printer' },

@@ -1,9 +1,26 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { MOCK_ORDERS } from '../constants';
-import { Search, Printer, RefreshCw } from 'lucide-react';
+import { Search, Printer, RefreshCw, QrCode } from 'lucide-react';
+import QRCodeModal from './QRCodeModal';
 
 const OrderList: React.FC = () => {
+  const [qrModal, setQrModal] = useState<{isOpen: boolean, title: string, data: string, subtext: string}>({
+    isOpen: false,
+    title: '',
+    data: '',
+    subtext: ''
+  });
+
+  const handleShowQR = (orderNo: string) => {
+    setQrModal({
+      isOpen: true,
+      title: '订单核销码',
+      data: orderNo,
+      subtext: '请出示此二维码进行取餐或核销'
+    });
+  };
+
   return (
     <div className="space-y-4">
       {/* Search Area */}
@@ -89,7 +106,17 @@ const OrderList: React.FC = () => {
                    <span>订单号: {order.orderNo}</span>
                    <span>日期: {new Date(order.timestamp).toLocaleString()}</span>
                    <span>支付方式: {order.paymentMethod || '未支付'}</span>
-                   <span className="ml-auto text-emerald-500 cursor-pointer">查看订单详情-备注</span>
+                   
+                   <div className="ml-auto flex items-center gap-4">
+                      <button 
+                         onClick={() => handleShowQR(order.orderNo)}
+                         className="flex items-center gap-1 text-emerald-600 hover:text-emerald-700"
+                      >
+                         <QrCode size={14} />
+                         <span className="font-medium">核销码</span>
+                      </button>
+                      <span className="text-emerald-500 cursor-pointer">查看订单详情-备注</span>
+                   </div>
                 </div>
 
                 {/* Order Body */}
@@ -160,6 +187,14 @@ const OrderList: React.FC = () => {
            ))}
         </div>
       </div>
+
+      <QRCodeModal 
+         isOpen={qrModal.isOpen}
+         onClose={() => setQrModal({...qrModal, isOpen: false})}
+         title={qrModal.title}
+         data={qrModal.data}
+         subtext={qrModal.subtext}
+      />
     </div>
   );
 };

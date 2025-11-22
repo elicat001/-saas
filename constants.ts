@@ -26,6 +26,7 @@ export const INITIAL_TABLES: Table[] = Array.from({ length: 10 }, (_, i) => ({
   name: `${i + 1}`,
   status: i === 0 ? TableStatus.AVAILABLE : (i === 1 ? TableStatus.SCANNED : TableStatus.AVAILABLE),
   capacity: i < 4 ? 2 : (i < 8 ? 4 : 8),
+  area: i < 4 ? '大厅' : (i < 8 ? '包厢' : '露台')
 }));
 
 export const MOCK_ORDERS: Order[] = [

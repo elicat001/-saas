@@ -1,9 +1,24 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PRODUCTS, CATEGORIES } from '../constants';
-import { Search, Plus, Download, Upload, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import { Search, Plus, Download, Upload, MoreHorizontal, Edit, Trash2, QrCode } from 'lucide-react';
+import QRCodeModal from './QRCodeModal';
 
 const ProductList: React.FC = () => {
+  const [qrModal, setQrModal] = useState<{isOpen: boolean, title: string, data: string}>({
+    isOpen: false,
+    title: '',
+    data: ''
+  });
+
+  const handleShowQR = (product: typeof PRODUCTS[0]) => {
+    setQrModal({
+      isOpen: true,
+      title: '商品二维码',
+      data: `https://store.keruyun.clone/product/${product.id}`, // Simulated Deep Link
+    });
+  };
+
   return (
     <div className="space-y-4">
       <div className="bg-white p-4 rounded-sm shadow-sm">
@@ -117,9 +132,15 @@ const ProductList: React.FC = () => {
                         </div>
                      </td>
                      <td className="p-4">
-                        <div className="flex gap-2 text-emerald-500 text-sm cursor-pointer">
-                           <span>编辑</span>
-                           <span>更多</span>
+                        <div className="flex gap-3 text-sm items-center">
+                           <span className="text-emerald-500 cursor-pointer hover:underline">编辑</span>
+                           <button 
+                              onClick={() => handleShowQR(product)}
+                              className="text-slate-400 hover:text-slate-600"
+                              title="生成二维码"
+                           >
+                             <QrCode size={16} />
+                           </button>
                         </div>
                      </td>
                   </tr>
@@ -127,6 +148,14 @@ const ProductList: React.FC = () => {
             </tbody>
          </table>
       </div>
+
+      <QRCodeModal 
+        isOpen={qrModal.isOpen}
+        onClose={() => setQrModal({...qrModal, isOpen: false})}
+        title={qrModal.title}
+        data={qrModal.data}
+        subtext="扫描二维码查看商品详情"
+      />
     </div>
   );
 };

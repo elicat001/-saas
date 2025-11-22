@@ -18,6 +18,7 @@ import ConfigStoreSettings from './components/ConfigStoreSettings';
 import ConfigOrderNotify from './components/ConfigOrderNotify';
 import ConfigMiniProgramHelper from './components/ConfigMiniProgramHelper';
 import ConfigInterfaceSettings from './components/ConfigInterfaceSettings';
+import ConfigSecondaryPages from './components/ConfigSecondaryPages';
 import ConfigSystemSettings from './components/ConfigSystemSettings';
 import ConfigThirdPartyDelivery from './components/ConfigThirdPartyDelivery';
 import ConfigPrinterSettings from './components/ConfigPrinterSettings';
@@ -84,6 +85,7 @@ const App: React.FC = () => {
               <Route path="/config/notify" element={<ConfigOrderNotify />} />
               <Route path="/config/helper" element={<ConfigMiniProgramHelper />} />
               <Route path="/config/interface" element={<ConfigInterfaceSettings />} />
+              <Route path="/config/secondary-pages" element={<ConfigSecondaryPages />} />
               <Route path="/config/system" element={<ConfigSystemSettings />} />
               <Route path="/config/delivery" element={<ConfigThirdPartyDelivery />} />
               <Route path="/config/printer" element={<ConfigPrinterSettings />} />
