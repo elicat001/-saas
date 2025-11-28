@@ -25,7 +25,6 @@ import ConfigSystemSettings from './components/ConfigSystemSettings';
 import ConfigThirdPartyDelivery from './components/ConfigThirdPartyDelivery';
 import ConfigPrinterSettings from './components/ConfigPrinterSettings';
 import ConfigTableCode from './components/ConfigTableCode';
-import ConfigBigScreen from './components/ConfigBigScreen';
 import ConfigDevConfig from './components/ConfigDevConfig';
 import CarouselAds from './components/CarouselAds';
 import Marketing from './components/Marketing';
@@ -165,7 +164,6 @@ const App: React.FC = () => {
               <Route path="/config/delivery" element={<ConfigThirdPartyDelivery />} />
               <Route path="/config/printer" element={<ConfigPrinterSettings />} />
               <Route path="/config/tablecode" element={<ConfigTableCode />} />
-              <Route path="/config/bigscreen" element={<ConfigBigScreen />} />
               <Route path="/config/dev" element={<ConfigDevConfig />} />
               
               {/* Other Routes */}

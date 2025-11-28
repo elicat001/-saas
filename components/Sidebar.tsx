@@ -68,7 +68,6 @@ const Sidebar: React.FC = () => {
         { label: '第三方配送', path: '/config/delivery' },
         { label: '打印机设置', path: '/config/printer' },
         { label: '桌码生成', path: '/config/tablecode' },
-        { label: '大屏幕管理', path: '/config/bigscreen' },
         { label: '开发配置', path: '/config/dev' },
       ] 
     },
