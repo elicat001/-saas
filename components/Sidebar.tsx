@@ -71,18 +71,9 @@ const Sidebar: React.FC = () => {
         { label: '开发配置', path: '/config/dev' },
       ] 
     },
-    { title: '轮播广告', icon: Image, path: '/ads' },
+
     { title: '营销管理', icon: Megaphone, path: '/marketing' },
     { title: '应用中心', icon: Grid, path: '/apps' },
-    { 
-      title: '辅助功能', 
-      icon: Wrench, 
-      subItems: [
-        { label: '客服设置', path: '/aux/service' },
-        { label: '物流助手', path: '/aux/logistics' },
-        { label: '外部业务域名', path: '/aux/domain' },
-      ] 
-    },
   ];
 
   const toggleMenu = (title: string) => {

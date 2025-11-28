@@ -47,12 +47,9 @@ import ConfigTableCode from './components/ConfigTableCode';
 import ConfigDevConfig from './components/ConfigDevConfig';
 
 // Other Components
-import CarouselAds from './components/CarouselAds';
+
 import Marketing from './components/Marketing';
 import AppCenter from './components/AppCenter';
-import AuxCustomerService from './components/AuxCustomerService';
-import AuxLogistics from './components/AuxLogistics';
-import AuxExternalDomain from './components/AuxExternalDomain';
 
 // UI Components
 import { PageLoading } from './components/ui/Loading';
@@ -302,12 +299,7 @@ const AppRoutes: React.FC = () => {
         </ProtectedRoute>
       } />
 
-      {/* 其他路由 */}
-      <Route path="/ads" element={
-        <ProtectedRoute>
-          <MainLayout><CarouselAds /></MainLayout>
-        </ProtectedRoute>
-      } />
+      
 
       <Route path="/marketing" element={
         <ProtectedRoute>
@@ -321,24 +313,11 @@ const AppRoutes: React.FC = () => {
         </ProtectedRoute>
       } />
 
-      {/* 辅助功能路由 */}
-      <Route path="/aux/service" element={
-        <ProtectedRoute>
-          <MainLayout><AuxCustomerService /></MainLayout>
-        </ProtectedRoute>
-      } />
+      
 
-      <Route path="/aux/logistics" element={
-        <ProtectedRoute>
-          <MainLayout><AuxLogistics /></MainLayout>
-        </ProtectedRoute>
-      } />
+      
 
-      <Route path="/aux/domain" element={
-        <ProtectedRoute>
-          <MainLayout><AuxExternalDomain /></MainLayout>
-        </ProtectedRoute>
-      } />
+      
 
       {/* 分类设置 */}
       <Route path="/categories" element={

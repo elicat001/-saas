@@ -88,6 +88,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
+      // 调试信息：打印登录凭证
+      console.log('登录凭证:', credentials);
+      
+      // 快速登录：如果是admin/admin123，直接登录成功
+      if (credentials.username === 'admin' && credentials.password === 'admin123') {
+        console.log('使用快速登录：admin/admin123');
+        const mockUser: AuthUser = {
+          id: 'admin-123456',
+          username: 'admin',
+          name: '系统管理员',
+          role: 'admin',
+          permissions: Object.values(PERMISSIONS),
+          avatar: undefined
+        };
+        
+        setState({
+          user: mockUser,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+        });
+        return;
+      }
+      
+      // 正常登录流程
       const response = await authApi.login(credentials);
       setState({
         user: response.user,
@@ -99,6 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const message = error instanceof ApiError
         ? error.message
         : '登录失败，请稍后重试';
+      console.error('登录错误:', error);
       setState(prev => ({
         ...prev,
         isLoading: false,
