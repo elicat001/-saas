@@ -20,7 +20,6 @@ import ConfigStoreSettings from './components/ConfigStoreSettings';
 import ConfigOrderNotify from './components/ConfigOrderNotify';
 import ConfigMiniProgramHelper from './components/ConfigMiniProgramHelper';
 import ConfigInterfaceSettings from './components/ConfigInterfaceSettings';
-import ConfigSecondaryPages from './components/ConfigSecondaryPages';
 import ConfigTemplateGallery from './components/ConfigTemplateGallery';
 import ConfigSystemSettings from './components/ConfigSystemSettings';
 import ConfigThirdPartyDelivery from './components/ConfigThirdPartyDelivery';
@@ -161,7 +160,6 @@ const App: React.FC = () => {
               <Route path="/config/notify" element={<ConfigOrderNotify />} />
               <Route path="/config/helper" element={<ConfigMiniProgramHelper />} />
               <Route path="/config/interface" element={<ConfigInterfaceSettings />} />
-              <Route path="/config/secondary-pages" element={<ConfigSecondaryPages />} />
               <Route path="/config/templates" element={<ConfigTemplateGallery />} />
               <Route path="/config/system" element={<ConfigSystemSettings />} />
               <Route path="/config/delivery" element={<ConfigThirdPartyDelivery />} />
